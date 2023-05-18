@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+    </style>
+    <script src="../Scripts/jquery-3.4.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                dataType: "json",			                //סוג הנתונים שאנחנו מצפים לקבל מהשרת
+                url: "/api/values",			            //הכתובת לשרת ולפונקציה
+                contentType: "application/json",		   //סוג הנתונים שאנחנו שולחים לשרת
+                type: "GET",				              //סוג הפעולה
+                /*                data: JSON.stringify(OrderDetailsDTO),			  //הנתונים עצמם שאנחנו שולחים*/
+                success: function (data) {
+                    //פונקציה  שתופעל לאחר הצלחה
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#orders").append(createOrdersTr(data[i]));
+                    }
+                },
+                error: function (err) {
+                    //פונקציה שתופעל במקרה של שגיאה
+                    console.log(err.responseText);
+                }
+            });
+        })
+        function createOrdersTr(orders) {
+
+
+            if (orders.amount > 10) {
+                return `<tr style="background-color:yellow" >
+                                <td>${orders.orderId}</td>
+                                <td>${orders.countryName}</td>
+                                <td>${orders.vacName}</td>
+                                <td>${orders.amount}</td>
+                                </tr>`;
+            }
+            else {
+                return `<tr>
+                                <td>${orders.orderId}</td>
+                                <td>${orders.countryName}</td>
+                                <td>${orders.vacName}</td>
+                                <td>${orders.amount}</td>
+                                </tr>`;
+            }
+
+        }
+    </script>
+    <script>
+        function searchcounty() {
+            $("#orders").empty();
+            $("#orders").append(`        <tr>
+            <th>order id</th>
+            <th>country name</th>
+            <th>vaccine name</th>
+            <th>amount</th>
+        </tr>`);
+            var Name = $("#countryName").val();
+            console.log(Name);
+            $(document).ready(function () {
+                $.ajax({
+                    dataType: "json",			                //סוג הנתונים שאנחנו מצפים לקבל מהשרת
+                    url: "/api/values/" + Name,			            //הכתובת לשרת ולפונקציה
+                    contentType: "application/json",		   //סוג הנתונים שאנחנו שולחים לשרת
+                    type: "GET",				              //סוג הפעולה
+                    /*                   data: JSON.stringify(Name),	*/		  //הנתונים עצמם שאנחנו שולחים
+                    success: function (data) {
+                        //פונקציה  שתופעל לאחר הצלחה
+                        for (var i = 0; i < data.length; i++) {
+                            $("#orders").append(createOrdersTr(data[i]));
+                        }
+                    },
+                    error: function (err) {
+                        //פונקציה שתופעל במקרה של שגיאה
+                        console.log(err.responseText);
+                    }
+                });
+            })
+        }
+    </script>
+    <script>
+        function updateOrder() {
+            var orderId = $("#orderId").val();
+            var vacName = $("#vacName").val();
+            var amount = $("#amount").val();
+            console.log(orderId);
+            console.log(vacName);
+            console.log(amount);
+            $(document).ready(function () {
+                $.ajax({
+                    dataType: "json",			                //סוג הנתונים שאנחנו מצפים לקבל מהשרת
+                    url: "/api/post/update/"+orderId+"/"+vacName+"/"+amount,			            //הכתובת לשרת ולפונקציה
+                    contentType: "application/json",		   //סוג הנתונים שאנחנו שולחים לשרת
+                    type: "POST",				              //סוג הפעולה
+                    /*                   data: JSON.stringify(Name),	*/		  //הנתונים עצמם שאנחנו שולחים
+                    success: function (data) {
+                        $("#orders").empty();
+
+                        document.getElementById("massage").innerText = "update succsess";
+                        $(document).ready(function () {
+                            $.ajax({
+                                dataType: "json",			                //סוג הנתונים שאנחנו מצפים לקבל מהשרת
+                                url: "/api/values",			            //הכתובת לשרת ולפונקציה
+                                contentType: "application/json",		   //סוג הנתונים שאנחנו שולחים לשרת
+                                type: "GET",				              //סוג הפעולה
+                                /*                data: JSON.stringify(OrderDetailsDTO),			  //הנתונים עצמם שאנחנו שולחים*/
+                                success: function (data) {
+                                    //פונקציה  שתופעל לאחר הצלחה
+                                    $("#orders").append(`        <tr>
+            <th>order id</th>
+            <th>country name</th>
+            <th>vaccine name</th>
+            <th>amount</th>
+        </tr>`);
+                                    for (var i = 0; i < data.length; i++) {
+                                        $("#orders").append(createOrdersTr(data[i]));
+                                    }
+                                },
+                                error: function (err) {
+                                    //פונקציה שתופעל במקרה של שגיאה
+                                    document.getElementById("massage").innerText = "failed";
+                                }
+                            });
+                        })
+
+
+                    },
+                    error: function (err) {
+                        document.getElementById("massage").innerText = "failed";
+                    }
+                });
+            })
+        }
+    </script>
+</head>
+<body dir="ltr">
+    <input placeholder="country name" id="countryName" />
+    <input type="button" value="search" onclick="searchcounty()" />
+    <br />
+    <br />
+
+    <table id="orders">
+        <tr>
+            <th>order id</th>
+            <th>country name</th>
+            <th>vaccine name</th>
+            <th>amount</th>
+        </tr>
+    </table>
+
+    <br />
+    <br />
+    <input placeholder="order id" id="orderId" />
+    <input placeholder="vaccine name" id="vacName" />
+    <input placeholder="amount" id="amount" />
+    <input type="button" value="update" onclick="updateOrder()" />
+    <span id="massage"></span>
+</body>
+</html>

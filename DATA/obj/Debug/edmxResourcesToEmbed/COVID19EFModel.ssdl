@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="COVID19Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Country">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" />
+    <Property Name="definition" Type="varbinary(max)" />
+  </EntityType>
+  <EntityType Name="Vaccin">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Quantity" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="VacOrder">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="CountryId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="VacOrderItem">
+    <Key>
+      <PropertyRef Name="OrderId" />
+      <PropertyRef Name="VaccinId" />
+    </Key>
+    <Property Name="OrderId" Type="int" Nullable="false" />
+    <Property Name="VaccinId" Type="int" Nullable="false" />
+    <Property Name="Amount" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_VacOrder_Country">
+    <End Role="Country" Type="Self.Country" Multiplicity="1" />
+    <End Role="VacOrder" Type="Self.VacOrder" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="VacOrder">
+        <PropertyRef Name="CountryId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_VacOrderItem_Vaccin">
+    <End Role="Vaccin" Type="Self.Vaccin" Multiplicity="1" />
+    <End Role="VacOrderItem" Type="Self.VacOrderItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Vaccin">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="VacOrderItem">
+        <PropertyRef Name="VaccinId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_VacOrderItem_VacOrder">
+    <End Role="VacOrder" Type="Self.VacOrder" Multiplicity="1" />
+    <End Role="VacOrderItem" Type="Self.VacOrderItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="VacOrder">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="VacOrderItem">
+        <PropertyRef Name="OrderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="COVID19ModelStoreContainer">
+    <EntitySet Name="Country" EntityType="Self.Country" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Vaccin" EntityType="Self.Vaccin" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="VacOrder" EntityType="Self.VacOrder" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="VacOrderItem" EntityType="Self.VacOrderItem" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_VacOrder_Country" Association="Self.FK_VacOrder_Country">
+      <End Role="Country" EntitySet="Country" />
+      <End Role="VacOrder" EntitySet="VacOrder" />
+    </AssociationSet>
+    <AssociationSet Name="FK_VacOrderItem_Vaccin" Association="Self.FK_VacOrderItem_Vaccin">
+      <End Role="Vaccin" EntitySet="Vaccin" />
+      <End Role="VacOrderItem" EntitySet="VacOrderItem" />
+    </AssociationSet>
+    <AssociationSet Name="FK_VacOrderItem_VacOrder" Association="Self.FK_VacOrderItem_VacOrder">
+      <End Role="VacOrder" EntitySet="VacOrder" />
+      <End Role="VacOrderItem" EntitySet="VacOrderItem" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
